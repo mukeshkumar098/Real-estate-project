@@ -152,26 +152,37 @@ const addProperties = async (req, res) => {
   };
 
 
-
-
-
   const searchProperties = async (req, res) => {
     try {
-      const { location, price, property_type, } = req.query;
-      
+      const { location, price, property_type } = req.query;
+  
       const filter = {};
-      if (location) filter.location = { $regex: location, $options: "i" };
-      // if (city) filter.city = { $regex: city, $options: "i" };
-      if (type) filter.type = { $regex: property_type, $options: "i" };
-      if (price) filter.price = { $lte: Number(price) }; 
+  
+      if (location) {
+        filter.location = { $regex: location, $options: 'i' };
+      }
+  
+      if (property_type) {
+        filter.property_type = { $regex: property_type, $options: 'i' }; // Corrected 'type' to 'property_type'
+      }
+  
+      if (price) {
+        filter.price = { $lte: Number(price) };
+      }
   
       const properties = await propertyModel.find(filter);
       res.status(200).json(properties);
     } catch (error) {
-      console.error("Error searching properties:", error);
-      res.status(500).json({ message: "Server error" });
+      console.error('Error searching properties:', error);
+      res.status(500).json({ message: 'Server error' });
     }
   };
+  
+  
+
+
+
+
 
 
 export {addProperties,getAllProperties,getPropertyById,searchProperties,deleteProperty};
