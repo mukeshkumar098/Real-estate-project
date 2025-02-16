@@ -4,6 +4,7 @@ import {addProperties, getAllProperties, getPropertyById, searchProperties} from
 import { upload } from '../Utils/S3.service.js';
 
 const propertiesRoute=express.Router();
+
 propertiesRoute.post("/add-properties",verifyRole(["seller"]),upload.array('images', 10),addProperties)
 propertiesRoute.get("/getProperties",getAllProperties)
 // propertiesRoute.put("/updateProperty/:id", verifyRole(["seller", "admin"]),updateProperty)

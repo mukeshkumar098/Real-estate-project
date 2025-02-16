@@ -1,7 +1,8 @@
-const { userModel } = require("../Models/userModel");
+import { userModel } from "../Models/userModel.js";
 
 
-const adminVerifySeller = async (req, res) => {
+
+export const adminVerifySeller = async (req, res) => {
     try {
         const { id } = req.params; // Get seller ID from request parameters
  
@@ -34,4 +35,4 @@ const adminVerifySeller = async (req, res) => {
     }
 };
 
-module.exports = adminVerifySeller;
+
