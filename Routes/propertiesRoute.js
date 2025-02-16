@@ -9,7 +9,7 @@ propertiesRoute.get("/getProperties",getAllProperties)
 // propertiesRoute.put("/updateProperty/:id", verifyRole(["seller", "admin"]),updateProperty)
 // propertiesRoute.delete("/deleteProperty/:id",deleteProperty)
 propertiesRoute.get("/getPropertyById/:id",getPropertyById)
-propertiesRoute.get("/searchProperties/search",searchProperties)
+propertiesRoute.get("/searchProperties",searchProperties)
 
 
   export {propertiesRoute}
