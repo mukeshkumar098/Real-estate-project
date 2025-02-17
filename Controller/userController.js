@@ -101,7 +101,7 @@ const forgetPassword = async (req, res, next) => {
     });
 
 
-    // console.log(transporter);
+    console.log(transporter);
     
     const receiver = {
       from: "",
