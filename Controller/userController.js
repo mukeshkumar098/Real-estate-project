@@ -107,6 +107,7 @@ const forgetPassword = async (req, res, next) => {
       from: "",
       to: email,
       subject: "password reset request",
+      text: `Click this link to reset your password: ${resetLink}`,
       html: `
         <h3>Password Reset Request</h3>
         <p>You requested to reset your password. Click the link below to set a new password:</p>
