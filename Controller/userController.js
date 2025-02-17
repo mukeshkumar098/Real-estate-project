@@ -86,6 +86,11 @@ const forgetPassword = async (req, res, next) => {
     const token = jwt.sign({ email }, process.env.SECRET_KEY, {
       expiresIn: "1h",
     });
+
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
+
+    console.log("Generated reset token:", token);
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       secure: true,
@@ -105,7 +110,7 @@ const forgetPassword = async (req, res, next) => {
       html: `
         <h3>Password Reset Request</h3>
         <p>You requested to reset your password. Click the link below to set a new password:</p>
-        <a href="${process.env.CLIENT_URL}/reset-password/${token}" target="_blank" 
+        <a href="${resetLink}" target="_blank" 
           style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;">
           Reset Password
         </a>
