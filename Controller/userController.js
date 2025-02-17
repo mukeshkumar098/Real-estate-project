@@ -102,7 +102,16 @@ const forgetPassword = async (req, res, next) => {
       from: "",
       to: email,
       subject: "password reset request",
-      text: `click on this link to generate new password ${process.env.CLIENT_URL}/reset-password/${token}`,
+      html: `
+        <h3>Password Reset Request</h3>
+        <p>You requested to reset your password. Click the link below to set a new password:</p>
+        <a href="${process.env.CLIENT_URL}/reset-password/${token}" target="_blank" 
+          style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;">
+          Reset Password
+        </a>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `,
     };
     await transporter.sendMail(receiver);
 
