@@ -137,4 +137,25 @@ const resetPassword = async (req, res) => {
   }
 };
 
+
+export const getUnverifiedSellers = async (req, res) => {
+  try {
+    const unverifiedSellers = await userModel.find({ role: 'seller', isVerified: false });
+    res.status(200).json(unverifiedSellers);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch unverified sellers', error: error.message });
+  }
+};
+
+
+export const getverifiedSellers = async (req, res) => {
+  try {
+    const verifiedSellers = await userModel.find({ role: 'seller', isVerified: true });
+    res.status(200).json(verifiedSellers);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch unverified sellers', error: error.message });
+  }
+};
+
+
 export { userRigster, userLogin, forgetPassword, resetPassword };
