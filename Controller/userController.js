@@ -68,75 +68,91 @@ const userLogin = async (req, res) => {
   }
 };
 
-// Forget Password
-const forgetPassword = async (req, res) => {
+const forgetPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
+    console.log(email)
     if (!email) {
-      return res.status(400).json({ message: "Please provide a valid email" });
+      return res.status(400).send({ message: "please provide valid email" });
     }
-
     const checkUser = await userModel.findOne({ email });
     if (!checkUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(400)
+        .send({ message: "user not found please register" });
     }
+    const token = jwt.sign({ email }, process.env.SECRET_KEY, {
+      expiresIn: "1h",
+    });
 
-    const token = jwt.sign({ email }, process.env.SECRET_KEY, { expiresIn: "1h" });
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
+
+    console.log("Generated reset token:", token);
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
+      secure: true,
       auth: {
         user: process.env.MY_GMAIL,
-        pass: process.env.MY_PASSWORD,
+        pass: process.env.MY_PASSWORD
       },
     });
 
-    const mailOptions = {
-      from: process.env.MY_GMAIL,
+
+    console.log(transporter);
+    
+    const receiver = {
+      from: "",
       to: email,
-      subject: "Password Reset Request",
-      text: `Click the link to reset your password: ${process.env.CLIENT_URL}/reset-password/${token}`,
+      subject: "password reset request",
+      text: `Click this link to reset your password: ${resetLink}`,
+      html: `
+        <h3>Password Reset Request</h3>
+        <p>You requested to reset your password. Click the link below to set a new password:</p>
+        <a href="${resetLink}" target="_blank" 
+          style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;">
+          Reset Password
+        </a>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `,
     };
+    await transporter.sendMail(receiver);
 
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).json({ message: "Password reset link sent successfully" });
+    return res
+      .status(200)
+      .send({
+        message: "password reset link send successfully on your gmail account",
+      });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res.status(400).send({ message: "something went wrong!" });
   }
 };
 
-// Reset Password
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res, next) => {
   try {
     const { token } = req.params;
-    const { password } = req.body;
-
+    const { email, password } = req.body;
     if (!password) {
-      return res.status(400).json({ message: "Please provide a new password" });
+      return res.status(400).send({ message: "Please provide a password!" });
     }
-
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-
     const user = await userModel.findOne({ email: decoded.email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(400).send({ message: "User not found!" });
     }
 
-    bcrypt.hash(password, +process.env.SALT_ROUND, async (err, hash) => {
+    bcrypt.hash(password, +process.env.SALT_ROUNDS, async (err, hash) => {
       if (err) {
-        return res.status(500).json({ message: "Password hashing failed", error: err });
+        return res.status(500).send({ message: "Error while resetting password!" });
       }
-
       await user.updateOne({ password: hash });
-
-      res.status(200).json({ message: "Password reset successfully" });
+      res.status(200).send({ success: true, message: "User password reset successfully" });
     });
   } catch (error) {
-    res.status(500).json({ message: "Invalid or expired token", error: error.message });
+    res.status(400).send({ message: "Something went wrong!" });
   }
 };
-
 
 export const getUnverifiedSellers = async (req, res) => {
   try {
